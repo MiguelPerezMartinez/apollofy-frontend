@@ -1,0 +1,46 @@
+.profile-circle-background {
+  position: relative;
+  width: 90%;
+  border-radius: 50%;
+  padding: 0.14rem;
+
+  animation: rotate 3s linear infinite;
+  top: 0;
+  left: 0;
+  border-radius: 100%;
+
+  box-shadow: inset 5px 5px 5px 0px var(--active-user);
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.profile-picture {
+  position: absolute;
+  border-radius: 50%;
+  width: 90%;
+  min-height: 90%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 5%;
+  left: 5%;
+}
+
+.profile-circle-background:before {
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
+
+.profile-picture:before {
+  position: absolute;
+  top: 0;
+}

@@ -1,0 +1,12 @@
+:root {
+  --main-bg-color: #000000;
+  --main-container-color: #242424;
+  --less-main-container-color: #2424249f;
+  --main-container-color-hover: #555555;
+  --active-user: #78bd6f;
+  --purple: #846ae9;
+  --yellow: #ffc107;
+  --less-yellow: #ffc1072f;
+  --blue: #08457e;
+  --dark-blue: #122f4b;
+}
