@@ -17,6 +17,7 @@
     "firebase": "^9.1.0",
     "jquery": "^3.6.0",
     "jquery-validation": "^1.19.3",
+    "jss": "^10.8.0",
     "react": "^17.0.2",
     "react-audio-spectrum": "^0.1.0",
     "react-bootstrap": "^2.0.0-beta.6",
