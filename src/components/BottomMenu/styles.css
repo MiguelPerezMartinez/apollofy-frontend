@@ -1,11 +1,11 @@
-@media (max-width: 400px) {
+@media (max-width: 425px) {
   .right-menu {
     display: none;
   }
 
   .mobile-bottom-menu {
     position: fixed !important;
-    bottom: 0px;
+    top: 90vh;
     width: 100vw;
     background-color: var(--main-container-color);
     display: flex;

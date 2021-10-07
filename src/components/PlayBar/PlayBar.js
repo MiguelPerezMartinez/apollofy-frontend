@@ -10,6 +10,7 @@ import {
 } from "../../redux/trackData/actions";
 import WaveSurfer from "wavesurfer.js";
 // import WaveSound from "../WaveSound";
+
 import "./styles.css";
 
 //Components and MUI icons
@@ -39,7 +40,7 @@ function PlayBar() {
   const waveformRef = useRef();
 
   //State vars
-  const [isMute, setMute] = useState(false);
+  const [ixsute, setMute] = useState(false);
   const [isPlayPause, setPlayPause] = useState(true);
   const [isChromeCast, setChromecast] = useState(false);
   const [trackProgressTime, setTrackProgressTime] = useState(0);
@@ -85,7 +86,7 @@ function PlayBar() {
   function skipForward() {}
 
   function isItMute() {
-    if (isMute) {
+    if (ixsute) {
       setMute(false);
       waveSurfer.setMute(false);
     } else {
@@ -164,22 +165,22 @@ function PlayBar() {
       <Row>
         <Col>
           <Row className="main-playbar-container">
-            <Col lg={3} md={6} sm={6} className="playbar-track-info-container">
+            <Col lg={3} md={6} xs={5} className="playbar-track-info-container">
               <Row className="playbar-info">
-                <Col lg={3} md={3} sm={3}>
+                <Col lg={3} md={3} xs={6}>
                   <div className="playbar-image">
                     <TrackImg urlCover={trackObject.urlCover} />
                   </div>
                 </Col>
-                <Col lg={9} md={9} sm={9}>
+                <Col lg={9} md={9} xs={6}>
                   <Row className="playbar-title">{trackObject.title}</Row>
                   <Row className="playbar-author">{trackObject.author}</Row>
                 </Col>
               </Row>
             </Col>
-            <Col lg={6} md={4} sm={4}>
+            <Col lg={4} md={4} xs={5}>
               <Row className="playbar-buttons-container">
-                <Col lg={1} md={2} sm={2} className="skip-backward">
+                <Col lg={1} md={4} xs={4} className="skip-backward">
                   <div onClick={skipBackward}>
                     <SkipPreviousOutlined fontSize="large" />
                   </div>
@@ -189,7 +190,7 @@ function PlayBar() {
                     <FastRewindOutlined fontSize="large" />
                   </div>
                 </Col>
-                <Col lg={1} md={2} sm={2}>
+                <Col lg={1} md={4} xs={4}>
                   {isPlayPause ? (
                     <div onClick={playPause}>
                       <PlayArrowOutlined fontSize="large" />
@@ -205,7 +206,7 @@ function PlayBar() {
                     <FastForwardOutlined fontSize="large" />
                   </div>
                 </Col>
-                <Col lg={1} md={2} sm={2}>
+                <Col lg={1} md={4} xs={4}>
                   <div onClick={skipForward}>
                     <SkipNextOutlined fontSize="large" />
                   </div>
@@ -225,7 +226,7 @@ function PlayBar() {
             <Col lg={2} className="d-none d-lg-block">
               <Row className="playbar-volume-container">
                 <Col lg={2}>
-                  {!isMute ? (
+                  {!ixsute ? (
                     <div onClick={isItMute}>
                       <VolumeUpOutlined fontSize="medium" />
                     </div>
@@ -242,15 +243,15 @@ function PlayBar() {
             </Col>
             <Col
               md={2}
-              sm={2}
-              className="d-none d-md-block d-sm-block playbar-fav-button"
+              xs={2}
+              className="d-none d-md-block d-xs-block playbar-fav-button"
             >
               <FavButton />
             </Col>
           </Row>
         </Col>
         <Col>
-          <Row className="playbar-cast-container">
+          <Row className="playbar-cast-container d-none d-lg-block d-md-block">
             {!isChromeCast ? (
               <div onClick={isChromeCastOn} className="cast-block">
                 <CastOutlined fontSize="medium" />

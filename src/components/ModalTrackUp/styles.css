@@ -22,7 +22,7 @@
   cursor: pointer;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 425px) {
   .track-upload {
     padding-top: 5rem;
     padding-bottom: 5rem;

@@ -1,9 +1,9 @@
 .main-playbar-container {
   position: fixed;
-  bottom: 0px;
+  top: 90vh;
   height: 10vh;
   max-height: 10vh;
-  width: 98vw;
+  width: 97vw;
   background-color: var(--main-container-color);
   justify-content: center;
   padding-top: 1vh;
@@ -75,9 +75,9 @@
 .playbar-cast-container {
   position: fixed;
   bottom: 0px;
-  right: 0px;
+  right: 0;
   height: 10vh;
-  width: 3rem;
+  width: 3vw;
   background-color: var(--purple);
   border-top: 1px solid var(--yellow);
   margin: 0px;
@@ -92,7 +92,22 @@
   height: 100%;
 }
 
-@media (max-height: 900px) {
+@media (max-width: 425px) {
+  .main-playbar-container,
+  .playbar-cast-container {
+    position: fixed;
+    top: 80vh;
+    left: 0;
+    right: 0;
+    width: auto;
+  }
+
+  .playbar-track-info-container {
+    padding-left: 0rem;
+  }
+}
+
+@media (max-width: 800px) {
   .playbar-buttons-container {
     min-height: 8vh !important;
   }
@@ -107,5 +122,21 @@
 
   .playbar-fav-button > div > svg {
     font-size: 3rem;
+  }
+
+  .playbar-image {
+    max-height: 7vh;
+  }
+
+  .playbar-info {
+    max-height: 7vh;
+  }
+
+  .playbar-title {
+    font-size: 1rem;
+  }
+
+  .playbar-author {
+    font-size: 0.8rem;
   }
 }
