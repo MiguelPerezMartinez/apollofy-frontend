@@ -5,11 +5,11 @@ import { logIn } from "../../services/firebase";
 
 import "./login.css";
 
-import { Row, Col } from "react-bootstrap";
 //Import components
 import Input from "../../components/Input";
 import SignNav from "../../components/SignNav";
 import Button from "../../components/Button";
+import { Row, Col } from "react-bootstrap";
 
 //Hoc No Authorization
 import withoutAuth from "../../hoc/withoutAuth.js";

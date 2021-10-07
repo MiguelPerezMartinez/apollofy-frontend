@@ -9,7 +9,7 @@ import {
   updatePassword,
 } from "firebase/auth";
 
-import { getById, updateById } from "./api";
+import { setIsActive } from "./api";
 
 export async function registerNewUser(email, password) {
   const auth = getAuth();
@@ -44,18 +44,6 @@ export function logOut() {
     .catch((error) => {
       console.error("Sign out failed");
     });
-}
-
-async function setIsActive(isActive) {
-  const userId = await getCurrentUserId();
-  const userToken = await getCurrentUserToken();
-  const { data } = await getById(userId, userToken);
-  const { _id } = data.currentUser;
-  if (isActive) {
-    updateById(_id, userToken, { active: true });
-  } else {
-    updateById(_id, userToken, { active: false });
-  }
 }
 
 export function resetPassword(email) {

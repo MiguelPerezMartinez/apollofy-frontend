@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Route, Switch } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -8,28 +8,44 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Register from "./pages/Register";
 import ResetPassword from "./pages/RecoverPassword";
+import ChangePassword from "./pages/ChangePassword";
+import ElementsList from "./pages/ElementsList";
 
 //Redux actions
-import { getState } from "./redux/isAuthorized/actions";
+import { fetchStateIsAuthorized } from "./redux/isAuthorized/actions";
+import { fetchUserData, resetUserData } from "./redux/userData/actions";
 
 function App() {
+  const [isReadyToRender, setIsReadyToRender] = useState(false);
+
   // Redux State to get the authorization
   const dispatch = useDispatch();
   const isAuthorized = useSelector((state) => state.isAuthorized);
+  const userData = useSelector((state) => state.userReducer);
 
-  // Get the state of authorization
   useEffect(() => {
-    dispatch(getState());
-  }, [dispatch]);
+    if (isAuthorized.loaded && isAuthorized.value) {
+      if (userData.loaded) {
+        setIsReadyToRender(true);
+      } else {
+        dispatch(fetchUserData());
+      }
+    } else if (isAuthorized.loaded && !isAuthorized.value) {
+      dispatch(resetUserData());
+      setIsReadyToRender(true);
+    } else {
+      dispatch(fetchStateIsAuthorized());
+    }
+  }, [dispatch, isAuthorized, userData]);
 
-  // To check the authorization state in console
-  if (isAuthorized.loaded) {
-    if (isAuthorized.value) console.log("Estás autorizado!");
-    else console.log("No estás autorizado!");
+  if (isReadyToRender) {
+    if (isAuthorized.value)
+      console.log("¡Estás autenticado! Welcome", userData.data.username);
+    else console.log("¡No estás autenticado!");
   }
 
-  // Render a loading page while auth state is loading
-  if (!isAuthorized.loaded) {
+  // Render a loading page while auth state and user data is loading
+  if (!isReadyToRender) {
     return (
       <main>
         <h1>Loading...</h1>
@@ -40,6 +56,9 @@ function App() {
   return (
     <>
       <Switch>
+        <Route path="/favourite-tracks" component={ElementsList} />
+        <Route path="/my-tracks" component={ElementsList} />
+        <Route path="/change-password" component={ChangePassword} />
         <Route path="/recover-password" component={ResetPassword} />
         <Route path="/register" component={Register} />
         <Route path="/profile" component={Profile} />

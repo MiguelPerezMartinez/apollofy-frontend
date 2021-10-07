@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 
 import "./styles.css";
-
+import { Row, Col } from "react-bootstrap";
 //Import components
 import Input from "../../components/Input";
 import SignNav from "../../components/SignNav";
@@ -36,27 +36,30 @@ function ResetPassword() {
   };
 
   return (
-    <main className="reset-password-main gradient-background">
-      <div className="reset-password-register">
-        <SignNav />
-        <h1 className="h3 mb-3 fw-normal">
-          Insert your email to reset the password
-        </h1>
-        <form onSubmit={handleSubmit}>
-          <Input
-            type="email"
-            name="email"
-            id="email"
-            label="Email"
-            placeholder="Your email"
-            value={state.email}
-            handleChange={handleChange}
-          />
+    <main className="reset-password gradient-background">
+      <Row>
+        <Col xs={12} md={6} className="login-register">
+          <SignNav />
 
-          <Button title="Send email" />
-        </form>
-        {emailSent && <div>Email sent, please check your email.</div>}
-      </div>
+          <h1 className="h3 mb-3 fw-normal">
+            Insert your email to reset the password
+          </h1>
+          <form onSubmit={handleSubmit}>
+            <Input
+              type="email"
+              name="email"
+              id="email"
+              label="Email"
+              placeholder="Your email"
+              value={state.email}
+              handleChange={handleChange}
+            />
+
+            <Button title="Send email" />
+          </form>
+          {emailSent && <div>Email sent, please check your email.</div>}
+        </Col>
+      </Row>
     </main>
   );
 }

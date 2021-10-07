@@ -14,12 +14,3 @@
   transform: translate(-50%, 50%);
   border-radius: 1rem;
 }
-
-.registerForm {
-  margin: 10%;
-}
-
-.img {
-  margin: 2% 25%;
-  min-width: 350px;
-}

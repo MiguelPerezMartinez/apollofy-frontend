@@ -1,55 +1,53 @@
 //Imports
 import React, { useState, useEffect } from "react";
-import Container from "react-bootstrap/Container";
+import { useDispatch, useSelector } from "react-redux";
+
+import "./styles.css";
+import "./spinner.css";
 
 //Hoc Authorization
 import withAuth from "../../hoc/withAuth";
-import "./styles.css";
-import { getCurrentUser, updateCurrentUser } from "../../services/api/index";
+import { updateCurrentUser } from "../../services/api/index";
 import { updateUserPass } from "../../services/firebase";
-
 import { logOut } from "../../services/firebase";
+import { changeMyProfilePicture } from "../../services/api/index";
 
 //Import components
-import RightMenu from "../../components/RightMenu";
+import BarsAndModal from "../../hoc/BarsAndModal";
 import ProfileCircleIcon from "../../components/ProfileCircleIcon";
 import Input from "../../components/Input";
-import { Row, Col } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
+import ModalTrackUp from "../../components/ModalTrackUp";
+
+import { fetchUserData } from "../../redux/userData/actions";
 
 function Profile() {
-  const [currentUser, setCurrentUser] = useState("");
+  const dispatch = useDispatch();
+  const { data: currentUser } = useSelector((state) => state.userReducer);
 
   const [editing, setEditing] = useState(false);
   const [editingPass, setEditingPass] = useState(false);
-  const [state, setState] = useState({
-    id: "",
-    firstname: "",
-    lastname: "",
-    username: "",
-    email: "",
-    birthday: "",
-    country: "",
-  });
+  const [state, setState] = useState(currentUser);
   const [passState, setPassState] = useState({
     password: "",
     confirmPassword: "",
   });
 
-  //Load user
+  const [showModal, setShowModal] = useState(false);
+
+  const [profilePicture, setProfilePicture] = useState({
+    file: "",
+    isSelected: false,
+    isUploading: false,
+    isUploaded: false,
+  });
+
+  const handleCloseModal = () => setShowModal(false);
+  const handleOpenModal = () => setShowModal(true);
+
   useEffect(() => {
-    getCurrentUser().then((response) => {
-      setState({
-        id: response._id,
-        firstname: response.firstname,
-        lastname: response.lastname,
-        username: response.username,
-        email: response.email,
-        birthday: response.birthday,
-        country: response.country,
-      });
-      setCurrentUser(response);
-    });
-  }, []);
+    uploadProfilePicture();
+  }, [profilePicture.isSelected]);
 
   //Toggle editing fields
   function handleEdit() {
@@ -84,10 +82,9 @@ function Profile() {
   //Update profile changes
   async function handleSubmit(e) {
     e.preventDefault();
-    console.log("fitrbaseUpdateEmpty");
     await updateCurrentUser(state);
-    setCurrentUser(state);
     setEditing(false);
+    dispatch(fetchUserData());
   }
 
   //Update profile changes
@@ -98,14 +95,54 @@ function Profile() {
     setEditingPass(false);
   }
 
+  function handleProfilePictureChange(e) {
+    setProfilePicture({
+      ...profilePicture,
+      file: e.target.files[0],
+      isSelected: true,
+      isUploading: true,
+    });
+  }
+
+  async function uploadProfilePicture() {
+    if (profilePicture.isSelected) {
+      const resp = await changeMyProfilePicture(profilePicture.file);
+      setProfilePicture({
+        ...profilePicture,
+        isUploading: false,
+        isUploaded: true,
+      });
+      await updateCurrentUser({
+        userId: currentUser.userId,
+        profileImg: resp.data.url,
+      });
+      dispatch(fetchUserData());
+      return true;
+    }
+  }
+
   return (
     <>
-      <RightMenu />
+      {showModal && <ModalTrackUp handleClose={handleCloseModal} />}
       <main>
         <Container>
           <Row>
-            <Col className="profile-view-profile-image" xs={3} md={3} lg={3}>
-              <ProfileCircleIcon />
+            <Col
+              className="profile-view-profile-image position-relative"
+              xs={3}
+              md={3}
+              lg={3}
+            >
+              <ProfileCircleIcon profileImg={currentUser.profileImg} />
+
+              <div className="change-profile-picture d-flex justify-content-center">
+                <h4>Change my picture</h4>
+                <input
+                  type="file"
+                  onChange={handleProfilePictureChange}
+                  className="upload-file-input"
+                />
+              </div>
             </Col>
             <Col xs={8} md={6} lg={6} className="profile-user-title">
               <h1>Welcome {currentUser.username}</h1>
@@ -124,6 +161,7 @@ function Profile() {
               />
             </Col>
           </Row>
+          <div className="xl-separator" />
           <div className="xl-separator" />
           <form onSubmit={handleSubmit}>
             <Row className="mt-4 general-container">
@@ -308,7 +346,7 @@ function Profile() {
                 )}
               </Col>
             </Row>
-            <div className="m-separator" />
+            <div className="xl-separator" />
             {editing ? (
               <>
                 <Row className="mt-2">
@@ -342,10 +380,21 @@ function Profile() {
               </Row>
             )}
           </form>
+          <div className="xl-separator" />
         </Container>
+        <Container className="general-container">
+          <Col className="d-flex justify-content-center">
+            <div className="button" onClick={handleOpenModal}>
+              Upload track
+            </div>
+          </Col>
+        </Container>
+        <div className="xl-separator" />
+        <div className="xl-separator" />
+        <div className="xl-separator" />
       </main>
     </>
   );
 }
 
-export default withAuth(Profile);
+export default withAuth(BarsAndModal(Profile));
