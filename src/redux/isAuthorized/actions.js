@@ -1,19 +1,16 @@
-import { FETCH_STATE_IS_AUTHORIZED, RESET_STATE_IS_AUTHORIZED } from "./types";
+import { GET_STATE } from "./types";
 
 import { authenticationObserver } from "../../services/firebase";
 
-export const fetchStateIsAuthorized = () => {
+export const getState = () => {
   return async (dispatch) => {
     authenticationObserver((user) => {
       if (user) {
-        dispatch({ type: FETCH_STATE_IS_AUTHORIZED, payload: true });
+        dispatch({ type: GET_STATE, payload: true });
+        
       } else {
-        dispatch({ type: FETCH_STATE_IS_AUTHORIZED, payload: false });
+        dispatch({ type: GET_STATE, payload: false });
       }
     });
   };
 };
-
-export const resetStateIsAuthorized = () => ({
-  type: RESET_STATE_IS_AUTHORIZED,
-});
