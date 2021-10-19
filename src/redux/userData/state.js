@@ -1,2 +1,5 @@
-const initialState = "no track";
+const initialState = {
+  data: {},
+  loaded: false,
+};
 export default initialState;

@@ -59,8 +59,8 @@ export function resetPassword(email) {
 
 export async function getCurrentUserToken() {
   const auth = getAuth();
-  console.log("await", auth);
-  console.log(auth.currentUser);
+  // console.log("await", auth);
+  // console.log(auth.currentUser);
   const token = auth.currentUser.getIdToken();
   return token;
 }

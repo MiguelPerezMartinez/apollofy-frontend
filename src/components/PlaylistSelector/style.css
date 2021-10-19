@@ -1,0 +1,25 @@
+.selectorModal {
+  position: fixed;
+  background-color: var(--main-container-color);
+  max-width: 50%;
+  left: 25%;
+  top: 10%;
+  z-index: 100;
+  border-radius: 25px;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 30px;
+  align-items: center;
+  padding: 3%;
+}
+.titleSelect {
+  color: rgb(188, 193, 188);
+}
+.submit-new-playlist-button {
+  background-color: var(--main-container-color);
+  color: var(--yellow);
+  border-radius: 5px;
+  border: 1px solid var(--yellow);
+  padding: 10px;
+  margin-left: 50px;
+}
