@@ -1,26 +1,56 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Redirect } from "react-router";
 
 import "./styles.css";
 
 import { logOut } from "../../services/firebase";
-
-//Components
-import { Row, Col } from "react-bootstrap";
+import { setSearchQuery } from "../../redux/searchHandler/actions";
 
 //Icons
 import { HomeOutlined, CloudUpload, SearchOutlined } from "@material-ui/icons";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 
 import ProfileCircleIcon from "../ProfileCircleIcon";
+import Input from "../../components/Input";
 
-export default function RightMenu({ handleOpenModal, handleCloseModal }) {
+import { isPlayBarDisplayedAction } from "../../redux/trackData/actions";
+import { setUploadTrackModal } from "../../redux/modalsHandler/actions";
+
+export default function RightMenu() {
+  const dispatch = useDispatch();
+
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const { username, profileImg } = useSelector(
     (state) => state.userReducer.data,
   );
+  const { query } = useSelector((state) => state.searchHandler);
 
-  return (
+  let location = useLocation();
+
+  const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
+
+  function handleChange(e) {
+    dispatch(setSearchQuery(e.target.value));
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    console.log(query);
+    if (location.pathname !== "/search") {
+      setIsSearchSubmitted(true);
+    }
+  }
+
+  function handleLogout() {
+    dispatch(isPlayBarDisplayedAction(false));
+    logOut();
+  }
+
+  return isSearchSubmitted ? (
+    <Redirect to="/search" />
+  ) : (
     <aside className="right-menu">
       <div>
         <Link to="/profile" className="right-menu-row">
@@ -32,8 +62,9 @@ export default function RightMenu({ handleOpenModal, handleCloseModal }) {
       <div
         onClick={() => {
           isUploadModalOpen
-            ? handleCloseModal() && setIsUploadModalOpen(false)
-            : handleOpenModal() && setIsUploadModalOpen(true);
+            ? dispatch(setUploadTrackModal(false)) &&
+              setIsUploadModalOpen(false)
+            : dispatch(setUploadTrackModal(true)) && setIsUploadModalOpen(true);
         }}
       >
         <div className="right-menu-row">
@@ -42,12 +73,19 @@ export default function RightMenu({ handleOpenModal, handleCloseModal }) {
         </div>
       </div>
       <div className="xl-separator" />
-      <div>
-        <div className="right-menu-row no-hover">
-          <SearchOutlined fontSize="large" />
-          <div className="right-menu-row-title">
-            <input type="text" placeholder="Search" />
-          </div>
+      <div className="right-menu-row no-hover">
+        <SearchOutlined fontSize="large" />
+        <div>
+          <form onSubmit={handleSubmit} className="right-menu-row-title">
+            <Input
+              type="text"
+              id="searchQuery"
+              label=""
+              value={query}
+              placeholder="Type your search"
+              handleChange={handleChange}
+            />
+          </form>
         </div>
       </div>
       <div>
@@ -56,13 +94,9 @@ export default function RightMenu({ handleOpenModal, handleCloseModal }) {
           <div className="right-menu-row-title">Home</div>
         </Link>
       </div>
-      <div onClick={logOut} className="right-menu-logout">
+      <div onClick={handleLogout} className="right-menu-logout">
         <div className="right-menu-row">
-          <img
-            src="./assets/img/logout.svg"
-            alt="logout"
-            className="right-menu-icon"
-          />
+          <LogoutOutlinedIcon fontSize="large" />
           <div className="right-menu-row-title">Logout</div>
         </div>
       </div>

@@ -1,17 +1,30 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link, useHistory } from "react-router-dom";
 import "./styles.css";
 
 //import dialogueHandlerReducer
 import { hideDialogue } from "../../redux/dialogueHandler/actions";
 
+import {
+  setUpdateTrackModal,
+  setDeleteTrackModal,
+  setMyPlaylistModal,
+} from "../../redux/modalsHandler/actions";
+
+import { setTrackQueueInLocalStorage } from "../../services/localStorage";
+
 function DialogueBox() {
   const dispatch = useDispatch();
-  const dialogueHandler = useSelector((state) => state.dialogueHandler);
+  const { trackDataDialog, position } = useSelector(
+    (state) => state.dialogueHandler,
+  );
   const userData = useSelector((state) => state.userReducer.data);
   const dialogueBox = useRef();
 
   const [isOwner, setIsOwner] = useState(false);
+
+  const history = useHistory();
 
   // Set the method to close the dialog when scrolling
   useEffect(() => {
@@ -20,9 +33,10 @@ function DialogueBox() {
     };
   }, []);
 
-  // Set owner option handler
+  // Set owner option handler ACORDARSE DE CAMBIAR ESTOS BOOLEANOS, ESTAN HACKEADOS
+
   useEffect(() => {
-    if (userData.userId === dialogueHandler.trackData.owner) {
+    if (userData.userId === trackDataDialog.owner) {
       setIsOwner(true);
     } else {
       setIsOwner(false);
@@ -37,8 +51,8 @@ function DialogueBox() {
     const windowWidth = window.innerWidth;
     const dialogueBoxHeight = dialogueBox.current.offsetHeight + 20;
     const dialogueBoxWidth = dialogueBox.current.offsetWidth + 20;
-    const clickedPosX = dialogueHandler.position.x;
-    const clickedPosY = dialogueHandler.position.y;
+    const clickedPosX = position.x;
+    const clickedPosY = position.y;
 
     if (windowWidth - clickedPosX < dialogueBoxWidth) {
       dialogueBox.current.style.left = windowWidth - dialogueBoxWidth + "px";
@@ -60,18 +74,38 @@ function DialogueBox() {
 
   function handlerAddToQueue() {
     //Code to add the track to queue
+    setTrackQueueInLocalStorage(trackDataDialog);
+    alert(`${trackDataDialog.title} added to queue.`);
+    closeDialogue();
   }
-
+  function handlerAddToMyplaylist() {
+    //Code to add the track to queue
+    dispatch(setMyPlaylistModal(true, trackDataDialog));
+    closeDialogue();
+  }
+  // function handlerMoreInfo() {
+  //   alert(`${trackDataDialog._id}`);
+  // }
   function handlerEdit() {
     //Code to edit the track
+    dispatch(setUpdateTrackModal(true, trackDataDialog));
+    closeDialogue();
   }
 
   function handlerDelete() {
     //Code to delete the track
+    dispatch(setDeleteTrackModal(true, trackDataDialog));
+    closeDialogue();
   }
 
   function handlerShare() {
     //Code to share the track
+    closeDialogue();
+  }
+
+  function handlerMoreInfo() {
+    history.push(`/track-view/${trackDataDialog._id}`);
+    closeDialogue();
   }
 
   return (
@@ -81,6 +115,12 @@ function DialogueBox() {
         <ul className="dialogue-list">
           <li className="dialogue-item" onClick={handlerAddToQueue}>
             Add to queue
+          </li>
+          <li className="dialogue-item" onClick={handlerMoreInfo}>
+            More Info
+          </li>
+          <li className="dialogue-item" onClick={handlerAddToMyplaylist}>
+            Add to MyPlaylist
           </li>
           <li className="dialogue-item" onClick={handlerShare}>
             Share

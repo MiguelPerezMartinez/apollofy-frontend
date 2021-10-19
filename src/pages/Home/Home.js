@@ -1,51 +1,71 @@
 //Imports
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import "./styles.css";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  faPlayCircle,
+  faHeart,
+  faBroadcastTower,
+} from "@fortawesome/free-solid-svg-icons";
 
 //Hoc Authorization
 import withAuth from "../../hoc/withAuth";
 import BarsAndModal from "../../hoc/BarsAndModal";
 
-import { getAllTracks } from "../../services/api/index";
+import {
+  getAllTracks,
+  getMostLikedTracks,
+  getMostPlayedTracks,
+} from "../../services/api/index";
 
 //Components
 import Track from "../../components/Track";
 import { Container, Row, Col } from "react-bootstrap";
 import ScrollContainer from "react-indiana-drag-scroll";
 import BlockTrack from "../../components/BlockTrack";
-import PlayBar from "../../components/PlayBar";
+import LinkCards from "../../components/LinkCards";
+import { reloadFetchAction } from "../../redux/trackData/actions";
 
 function Home() {
-  const { isPlayBarDisplayed, trackObject } = useSelector(
-    (state) => state.trackReducer,
-  );
-
-  const [allTracks, setAlltracks] = useState([]);
+  const dispatch = useDispatch();
+  const { reloadFetch } = useSelector((state) => state.trackReducer);
+  const [lastUploadedTracks, setlastUploadedTracks] = useState([]);
+  const [trashTracks, setTrashTracks] = useState([]);
+  const [pachangaTracks, setPachangaTracks] = useState([]);
+  const [mostPlayedTracks, setMostPlayedTracks] = useState([]);
+  const [mostLikedTracks, setMostLikedTracks] = useState([]);
   // const [tracksLoaded, setTracksLoaded] = useState(false);
+
   useEffect(() => {
-    getAllTracks().then((response) => {
-      setAlltracks(response.data.tracks);
-      // setTracksLoaded(true);
-    });
+    if (reloadFetch) {
+      // Load last uploaded tracks
+      getAllTracks().then((response) => {
+        setlastUploadedTracks(response.data.tracks.slice(0, 6));
+        setTrashTracks(response.data.tracks.slice(6, 20));
+        setPachangaTracks(response.data.tracks.slice(17, -1));
+      });
+
+      // Load most played tracks
+      getMostPlayedTracks().then((response) => {
+        setMostPlayedTracks(response.data.tracks.slice(0, 5));
+      });
+
+      // Load most liked tracks
+      getMostLikedTracks().then((response) => {
+        setMostLikedTracks(response.data.tracks);
+      });
+      dispatch(reloadFetchAction(false));
+    }
+    // eslint-disable-next-line
+  }, [reloadFetch]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(reloadFetchAction(true));
+    };
+    // eslint-disable-next-line
   }, []);
 
-  // track arrays mocks
-
-  let topTracks = [];
-  for (let i = 0; i < 5; i++) {
-    topTracks.push(allTracks[i]);
-  }
-
-  let RecommendedTracks = [];
-  for (let i = 0; i < 14; i++) {
-    RecommendedTracks.push(allTracks[i + 5]);
-  }
-
-  let lastUploadedTracks = [];
-  for (let i = 0; i < 6; i++) {
-    lastUploadedTracks.push(allTracks[i + 19]);
-  }
   function saveInQueue(e) {
     console.log(e.target.key);
   }
@@ -54,16 +74,39 @@ function Home() {
       <main>
         <Container>
           <Row>
-            <Col sm xs={12} md={5} lg={5}>
-              <div className="home-top-col">
-                <h1>HOME</h1>
-                <h2>Songs</h2>
-                <h3>My plylist</h3>
+            <Col sm xs={12} md={12} lg={5}>
+              <div className="home-top-col-targets">
+                <Row>
+                  <Col xs={12}>
+                    <LinkCards
+                      name="Favourite Songs"
+                      icon={faHeart}
+                      to="/favourite-tracks"
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12} md={12} lg={6}>
+                    <LinkCards
+                      name="Favourite Playlist"
+                      icon={faPlayCircle}
+                      to="/favourite-playlists"
+                    />
+                  </Col>
+                  <Col xs={12} md={12} lg={6}>
+                    <LinkCards
+                      name="History"
+                      icon={faBroadcastTower}
+                      to=""
+                    />
+                  </Col>
+                </Row>
               </div>
             </Col>
-            <Col sm xs={12} md={7} lg={7}>
+            <Col sm xs={12} md={12} lg={7}>
+              <h1>Trending:</h1>
               <div className="home-top-col">
-                {topTracks.map((track, index) => {
+                {mostPlayedTracks.map((track, index) => {
                   return (
                     <Track
                       onClick={saveInQueue}
@@ -81,7 +124,7 @@ function Home() {
           <h1>Recommended for you:</h1>
           <ScrollContainer className="scroll-container">
             <Row className="scroll-wrapper-tracks">
-              {RecommendedTracks.map((track, index) => {
+              {mostLikedTracks.map((track, index) => {
                 return (
                   <Col key={track ? track._id : index}>
                     <BlockTrack dataTrack={track} size="small" />
@@ -90,26 +133,30 @@ function Home() {
               })}
             </Row>
           </ScrollContainer>
+        </Container>
 
-          <div className="xl-separator" />
+        <div className="xl-separator" />
 
-          <h1>Last uploaded:</h1>
+        <Container>
+          <h1>Last Uploaded:</h1>
           <Row sm xs={4} md={4} lg={2}>
             {lastUploadedTracks.map((track, index) => {
               return (
-                <Col sm xs={4} md={4} lg={2} key={track ? track._id : index}>
+                <Col sm xs={2} md={4} lg={2} key={track ? track._id : index}>
                   <BlockTrack dataTrack={track} size="big" />
                 </Col>
               );
             })}
           </Row>
+        </Container>
 
-          <div className="xl-separator" />
+        <div className="xl-separator" />
 
-          <h1>Recommended for you:</h1>
+        <Container>
+          <h1>Trash Tracks:</h1>
           <ScrollContainer className="scroll-container">
             <Row className="scroll-wrapper-tracks">
-              {RecommendedTracks.map((track, index) => {
+              {trashTracks.map((track, index) => {
                 return (
                   <Col key={track ? track._id : index}>
                     <BlockTrack dataTrack={track} size="small" />
@@ -118,13 +165,15 @@ function Home() {
               })}
             </Row>
           </ScrollContainer>
+        </Container>
 
-          <div className="xl-separator" />
+        <div className="xl-separator" />
 
-          <h1>Recommended for you:</h1>
+        <Container>
+          <h1>Pachanga selection for you:</h1>
           <ScrollContainer className="scroll-container">
             <Row className="scroll-wrapper-tracks">
-              {RecommendedTracks.map((track, index) => {
+              {pachangaTracks.map((track, index) => {
                 return (
                   <Col key={track ? track._id : index}>
                     <BlockTrack dataTrack={track} size="small" />
@@ -135,7 +184,6 @@ function Home() {
           </ScrollContainer>
         </Container>
       </main>
-      {isPlayBarDisplayed && <PlayBar />}
     </>
   );
 }

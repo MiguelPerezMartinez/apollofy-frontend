@@ -1,25 +1,44 @@
 //Imports
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 import "./styles.css";
 import "./spinner.css";
 
 //Hoc Authorization
 import withAuth from "../../hoc/withAuth";
-import { updateCurrentUser } from "../../services/api/index";
+import {
+  updateCurrentUser,
+  changeMyProfilePicture,
+  getTotalPlays,
+  getTotalTracks,
+} from "../../services/api/index";
 import { updateUserPass } from "../../services/firebase";
 import { logOut } from "../../services/firebase";
-import { changeMyProfilePicture } from "../../services/api/index";
 
 //Import components
 import BarsAndModal from "../../hoc/BarsAndModal";
 import ProfileCircleIcon from "../../components/ProfileCircleIcon";
 import Input from "../../components/Input";
 import { Container, Row, Col } from "react-bootstrap";
-import ModalTrackUp from "../../components/ModalTrackUp";
+import LinkCards from "../../components/LinkCards";
+import {
+  faPlayCircle,
+  faHeart,
+  faBroadcastTower,
+} from "@fortawesome/free-solid-svg-icons";
+
+//Charts
+import {
+  MyTopNine,
+  MyTopTen,
+  TotalLastSevenDays,
+} from "../../components/Charts";
 
 import { fetchUserData } from "../../redux/userData/actions";
+import { isPlayBarDisplayedAction } from "../../redux/trackData/actions";
+import { setUploadTrackModal } from "../../redux/modalsHandler/actions";
 
 function Profile() {
   const dispatch = useDispatch();
@@ -32,8 +51,9 @@ function Profile() {
     password: "",
     confirmPassword: "",
   });
-
-  const [showModal, setShowModal] = useState(false);
+  const [showChart, setShowChart] = useState("total-last-7-days");
+  const [myTotalPlays, setMyTotalPlays] = useState("");
+  const [myTotalTracks, setMyTotalTracks] = useState("");
 
   const [profilePicture, setProfilePicture] = useState({
     file: "",
@@ -42,8 +62,11 @@ function Profile() {
     isUploaded: false,
   });
 
-  const handleCloseModal = () => setShowModal(false);
-  const handleOpenModal = () => setShowModal(true);
+  useEffect(() => {
+    totalPlaysData();
+    totalTracksData();
+    // eslint-disable-next-line
+  }, []);
 
   useEffect(() => {
     uploadProfilePicture();
@@ -121,9 +144,31 @@ function Profile() {
     }
   }
 
+  function handleLogout() {
+    dispatch(isPlayBarDisplayedAction(false));
+    logOut();
+  }
+
+  function handleShowChart(chart) {
+    setShowChart(chart);
+  }
+
+  async function totalPlaysData() {
+    await getTotalPlays(state.userId).then((response) => {
+      let total = response.data.message;
+      setMyTotalPlays(total);
+    });
+  }
+
+  async function totalTracksData() {
+    await getTotalTracks(state.userId).then((response) => {
+      let total = response.data.message;
+      setMyTotalTracks(total);
+    });
+  }
+
   return (
     <>
-      {showModal && <ModalTrackUp handleClose={handleCloseModal} />}
       <main>
         <Container>
           <Row>
@@ -157,7 +202,7 @@ function Profile() {
                 src="./assets/img/logout.svg"
                 alt="logout"
                 className="profile-logout-icon"
-                onClick={logOut}
+                onClick={handleLogout}
               />
             </Col>
           </Row>
@@ -372,23 +417,146 @@ function Profile() {
               </>
             ) : (
               <Row className="mt-2">
-                <Col className="d-flex justify-content-center">
+                <Col lg={3} md={6} sx={12} />
+                <Col
+                  lg={3}
+                  md={6}
+                  sx={12}
+                  className="d-flex justify-content-center"
+                >
                   <button className="button" onClick={handleEdit}>
                     Edit profile info
                   </button>
                 </Col>
+                <Col
+                  lg={3}
+                  md={6}
+                  sx={12}
+                  className="d-flex justify-content-center"
+                >
+                  <div
+                    className="button"
+                    onClick={() => {
+                      dispatch(setUploadTrackModal(true));
+                    }}
+                  >
+                    Upload track
+                  </div>
+                </Col>
+                <Col lg={3} md={6} sx={12} />
               </Row>
             )}
           </form>
           <div className="xl-separator" />
         </Container>
-        <Container className="general-container">
-          <Col className="d-flex justify-content-center">
-            <div className="button" onClick={handleOpenModal}>
-              Upload track
-            </div>
-          </Col>
+        <Container></Container>
+
+        <div className="xl-separator" />
+
+        <Container>
+          <Row>
+            <Col
+              lg={3}
+              md={6}
+              sx={12}
+              className="d-flex justify-content-center link-cards-profile-size"
+            >
+              <div className="profile-stats-container">
+                <h5>Plays (all time)</h5>
+                <span>{myTotalPlays !== "" ? myTotalPlays : "-"}</span>
+              </div>
+            </Col>
+            <Col
+              lg={3}
+              md={6}
+              sx={12}
+              className="d-flex justify-content-center link-cards-profile-size"
+            >
+              <div className="profile-stats-container">
+                <h5>Plays (24h)</h5>
+                {/* Sacado de laravel, query(where fecha = hoy & user = currentUser) */}
+                <span>-</span>
+              </div>
+            </Col>
+            <Col
+              lg={3}
+              md={6}
+              sx={12}
+              className="d-flex justify-content-center link-cards-profile-size"
+            >
+              <div className="profile-stats-container">
+                <h5>Today's best</h5>
+                {/* Sacado de laravel, query(where fecha = hoy & user = currentUser) */}
+                <span>-</span>
+              </div>
+            </Col>
+            <Col
+              lg={3}
+              md={6}
+              sx={12}
+              className="d-flex justify-content-center link-cards-profile-size"
+            >
+              <div className="profile-stats-container">
+                <h5>Total tracks</h5>
+                <span>{myTotalTracks !== "" ? myTotalTracks : "-"}</span>
+              </div>
+            </Col>
+          </Row>
         </Container>
+
+        <div className="xl-separator" />
+        <div className="xl-separator" />
+        <h1
+          style={{
+            width: "100%",
+            textAlign: "center",
+            padding: "1rem 0.5rem",
+          }}
+        >
+          MY STATS
+        </h1>
+        <Container className="general-container profile-chart-container">
+          <Row>
+            <Col xl={12} className="justify-content-center">
+              <ul className="profile-chart-labels">
+                <li
+                  onClick={() => {
+                    handleShowChart("total-last-7-days");
+                  }}
+                  className="profile-link-buttons"
+                >
+                  MY TOTAL PLAYS (last 7 days)
+                </li>
+                <li
+                  onClick={() => {
+                    handleShowChart("top-10-tracks");
+                  }}
+                  className="profile-link-buttons"
+                >
+                  MY TOP 10 TRACKS
+                </li>
+                <li
+                  onClick={() => {
+                    handleShowChart("top-9-tracks");
+                  }}
+                  className="profile-link-buttons"
+                >
+                  MY TOP 9 TRACKS
+                </li>
+              </ul>
+            </Col>
+          </Row>
+          <Row className="profile-charts-container">
+            <Col xl={3} />
+            <Col xl={6}>
+              {showChart === "top-10-tracks" && <MyTopTen />}
+              {showChart === "total-last-7-days" && <TotalLastSevenDays />}
+              {showChart === "total-9-tracks" && <MyTopNine />}
+            </Col>
+            <Col xl={3} />
+          </Row>
+        </Container>
+
         <div className="xl-separator" />
         <div className="xl-separator" />
         <div className="xl-separator" />

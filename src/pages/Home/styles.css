@@ -5,6 +5,10 @@
 .home-top-col {
   /* border: 1px solid cyan; */
 }
+.home-top-col-targets {
+  /* border: 1px solid cyan; */
+  margin-top: 100px;
+}
 
 .scroll-wrapper-tracks {
   width: 130rem;

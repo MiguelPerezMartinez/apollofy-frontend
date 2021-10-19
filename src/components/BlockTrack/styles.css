@@ -48,6 +48,10 @@
   text-overflow: ellipsis;
 }
 
-.icon {
+.liked {
   color: red;
+}
+
+.like-disabled {
+  color: grey;
 }

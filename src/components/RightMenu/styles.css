@@ -10,7 +10,7 @@
     min-height: 90vh;
     max-height: 90vh;
     padding: 1rem 0.2rem;
-    background-color: var(--main-container-color);
+    background-color: var(--secondary-container-color /*--main-menu-bg-color*/);
     transition: all 0.3s ease-in-out;
     display: flex;
     flex-direction: column;
@@ -96,4 +96,9 @@
   .display-none {
     display: none;
   }
+}
+
+.right-menu-logout {
+  position: absolute;
+  bottom: 0;
 }

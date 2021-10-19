@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import "./styles.css";
 
@@ -12,12 +12,17 @@ import { HomeOutlined, CloudUpload, SearchOutlined } from "@material-ui/icons";
 
 import ProfileCircleIcon from "../ProfileCircleIcon";
 
-export default function BottomMenu({ handleOpenModal, handleCloseModal }) {
+import { setUploadTrackModal } from "../../redux/modalsHandler/actions";
+
+export default function BottomMenu() {
+  const dispatch = useDispatch();
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const { profileImg } = useSelector((state) => state.userReducer.data);
 
   function handleChange() {
-    isUploadModalOpen ? handleCloseModal() : handleOpenModal();
+    isUploadModalOpen
+      ? dispatch(setUploadTrackModal(false))
+      : dispatch(setUploadTrackModal(true));
     setIsUploadModalOpen(!isUploadModalOpen);
   }
   return (

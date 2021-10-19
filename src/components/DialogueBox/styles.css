@@ -19,6 +19,9 @@
   font-size: medium;
   cursor: pointer;
 }
+.dialogue-item-link:hover {
+  color: lawngreen;
+}
 
 .dialogue-item-disabled {
   font-size: medium;

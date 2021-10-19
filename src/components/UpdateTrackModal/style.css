@@ -1,0 +1,27 @@
+/* .update-modal {
+  position: absolute;
+
+  left: 25%;
+
+  height: 100vh;
+} */
+.existing-image {
+  max-width: 200px;
+}
+.track-update {
+  background: linear-gradient(rgba(0, 0, 0, 0.76) 1vh, var(--blue));
+  /* background: linear-gradient(black 1vh, var(--blue)); */
+  padding: 2% 5% 2%;
+  position: absolute;
+  z-index: 10;
+  left: 45%;
+  max-width: 600px;
+  width: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 1rem;
+}
+.titleUpdate {
+  color: rgb(32, 91, 143);
+  margin-bottom: 50px;
+}

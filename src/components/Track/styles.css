@@ -1,5 +1,4 @@
 .track-row {
-  width: 100%;
   height: 3.2rem;
   background: var(--main-container-color);
   padding: 0.25rem;
@@ -11,7 +10,6 @@
 .track-field-centered {
   display: flex;
   align-items: center;
-  height: 100%;
 }
 
 .track-field-centered > p {
@@ -45,6 +43,12 @@
   margin-bottom: 0rem;
   font-size: 0.75rem;
   font-weight: lighter;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.track-album {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

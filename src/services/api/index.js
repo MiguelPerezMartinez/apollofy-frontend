@@ -6,12 +6,30 @@ import {
   updateById,
   setIsActive,
   getAllTracks,
+  getMostLikedTracks,
+  getMostPlayedTracks,
 } from "./apiAuth";
 
-import { apiTrackUpload } from "./trackUpload";
+import {
+  apiTrackUpload,
+  addTotalPlay,
+  deleteTrack,
+  updateTrack,
+  getTrackByName,
+  getTrackById,
+} from "./trackManager";
 import { changeMyProfilePicture } from "./fileUploader";
+import {
+  getAllMyPlaylist,
+  addTrackToPlaylist,
+  createNewPlaylistApi,
+  deleteTrackFromPlaylistApi,
+} from "./apiPlaylist";
+
+import { getTotalPlays, getTotalTracks } from "./apiUser";
 
 export {
+  getTrackById,
   registerInApi,
   getById,
   getCurrentUser,
@@ -21,4 +39,16 @@ export {
   apiTrackUpload,
   changeMyProfilePicture,
   getAllTracks,
+  getMostLikedTracks,
+  getMostPlayedTracks,
+  addTotalPlay,
+  deleteTrack,
+  updateTrack,
+  getTrackByName,
+  getAllMyPlaylist,
+  addTrackToPlaylist,
+  createNewPlaylistApi,
+  deleteTrackFromPlaylistApi,
+  getTotalPlays,
+  getTotalTracks,
 };

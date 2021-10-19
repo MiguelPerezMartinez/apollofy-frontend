@@ -1,22 +1,34 @@
 import { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+
+import { addTotalPlay } from "../../services/api";
+import {
+  trackObjectAction,
+  setPositionInHistory,
+  isPlayBarDisplayedAction,
+} from "../../redux/trackData/actions";
+import {
+  setTrackHistoryInLocalStorage,
+  resetPositionInHistory,
+} from "../../services/localStorage";
 
 import {
-  isPlay,
-  isPlayBarDisplayed,
-  setWaveSurfer,
-  trackObjectAction,
-  setemptyHistoryQueue,
-} from "../../redux/trackData/actions";
-import WaveSurfer from "wavesurfer.js";
-// import WaveSound from "../WaveSound";
+  WSLoadNewTrack,
+  WSTogglePlayPause,
+  WSRewindBackward,
+  WSFastForward,
+  WSToggleMute,
+  WSSetVolume,
+  WSDestroyInstance,
+} from "../../services/waveSurfer";
 
 import "./styles.css";
 
 //Components and MUI icons
 import { Row, Col } from "react-bootstrap";
 import TrackImg from "../TrackImg";
-import FavButton from "../FavButton";
+// import FavButton from "../FavButton";
 import {
   CastOutlined,
   CastConnected,
@@ -28,138 +40,112 @@ import {
   FastRewindOutlined,
   VolumeUpOutlined,
   VolumeOffOutlined,
+  Favorite,
+  Cancel,
 } from "@material-ui/icons";
 
 function PlayBar() {
   //Redux and ref vars
-  const trackReducer = useSelector((state) => state.trackReducer);
-  const { isPlaying, waveSurfer, trackObject, emptyHistoryQueue } =
-    trackReducer;
+  const { trackObject, positionInHistory } = useSelector(
+    (state) => state.trackReducer,
+  );
 
   const dispatch = useDispatch();
   const waveformRef = useRef();
 
   //State vars
-  const [ixsute, setMute] = useState(false);
+  const [volume, setVolume] = useState(50);
+  const [isMute, setIsMute] = useState(false);
   const [isPlayPause, setPlayPause] = useState(true);
-  const [isChromeCast, setChromecast] = useState(false);
+  const [isChromeCast, setIsChromecast] = useState(false);
   const [trackProgressTime, setTrackProgressTime] = useState(0);
   const [trackDurationTime, setTrackDurationTime] = useState(0);
+  const [isTrackLoaded, setIsTrackLoaded] = useState(false);
 
-  function playPause() {
-    waveSurfer.playPause();
-    if (isPlaying) {
-      setPlayPause(false);
-      dispatch(isPlay(false));
-    } else {
-      setPlayPause(true);
-      dispatch(isPlay(true));
-    }
+  // const [waveSurfer, setWaveSurfer] = useState(null);
+
+  // action when new track is loaded
+  useEffect(() => {
+    setIsTrackLoaded(false);
+    WSLoadNewTrack(
+      trackObject.urlTrack,
+      {
+        isMute: isMute,
+        volume: volume,
+      },
+      (duration) => {
+        setIsTrackLoaded(true);
+        setTrackDurationTime(duration);
+        setPlayPause(true);
+        setTrackHistoryInLocalStorage(trackObject);
+        addTotalPlay(trackObject._id);
+      },
+      (currentTime) => {
+        setTrackProgressTime(currentTime);
+      },
+      () => {
+        skipForward();
+      },
+    );
+    // eslint-disable-next-line
+  }, [trackObject]);
+
+  // action when volume is changed
+  useEffect(() => {
+    if (isMute) handlerMute();
+    WSSetVolume(volume);
+    // eslint-disable-next-line
+  }, [volume]);
+
+  // action when the component is unmounted
+  useEffect(() => {
+    return WSDestroyInstance;
+  }, []);
+
+  function handlerPlayPause() {
+    setPlayPause(WSTogglePlayPause());
   }
 
-  function rewindBackward() {
-    waveSurfer.skipBackward(5);
-  }
-
-  function fastForward() {
-    waveSurfer.skipForward(5);
-  }
   function skipBackward() {
     const historySongs = JSON.parse(localStorage.getItem("trackHistory"));
-    let prevSongPos = 0;
-    if (historySongs.length === 1) {
-      prevSongPos = historySongs.length - 1;
-      dispatch(setemptyHistoryQueue(false));
-    } else if (historySongs.length >= 2) {
-      prevSongPos = historySongs.length - 2;
+
+    if (positionInHistory > 0) {
+      dispatch(setPositionInHistory(positionInHistory - 1));
     }
 
     const prevSong = JSON.parse(localStorage.getItem("trackHistory"))[
-      prevSongPos
+      positionInHistory
     ];
-    historySongs.pop();
 
     localStorage.setItem("trackHistory", JSON.stringify(historySongs));
 
     dispatch(trackObjectAction(prevSong));
   }
-  function skipForward() {}
 
-  function isItMute() {
-    if (ixsute) {
-      setMute(false);
-      waveSurfer.setMute(false);
+  function skipForward() {
+    const trackQueue = JSON.parse(localStorage.getItem("trackQueue"));
+
+    if (trackQueue === null || trackQueue.length < 1) {
+      console.log("Play recomended ", trackQueue);
     } else {
-      setMute(true);
-      waveSurfer.setMute(true);
+      const nextSong = trackQueue.shift();
+      localStorage.setItem("trackQueue", JSON.stringify(trackQueue));
+      dispatch(trackObjectAction(nextSong));
     }
+    const resetedHistoryPosition = resetPositionInHistory();
+    dispatch(setPositionInHistory(resetedHistoryPosition));
   }
 
-  function handleVolume(e) {
-    waveSurfer.setVolume(e.target.value / 100);
+  function handlerMute() {
+    const state = WSToggleMute();
+    if (!state) WSSetVolume(volume);
+    setIsMute(state);
   }
 
-  function isChromeCastOn() {
-    if (isChromeCast) {
-      console.log("Chromecast is off");
-      setChromecast(false);
-    } else {
-      console.log("Chromecast is on");
-      setChromecast(true);
-    }
+  function handlerChromeCast() {
+    setIsChromecast(!isChromeCast);
   }
 
-  useEffect(() => {
-    if (waveSurfer != null) {
-      waveSurfer.destroy();
-    }
-    const wavesurfer = WaveSurfer.create({
-      container: waveformRef.current,
-      waveColor: "#D9DCFF",
-      progressColor: "#4353FF",
-      cursorColor: "#4353FF",
-      barWidth: 2,
-      barRadius: 3,
-      cursorWidth: 0,
-      height: 48,
-      barGap: 2,
-      hideScrollbar: true,
-      // fillParent: true
-
-      fillParent: true,
-      maxCanvasWidth: 20,
-      // autoCenter: true,
-      responsive: true,
-    });
-    dispatch(setWaveSurfer(wavesurfer));
-
-    wavesurfer.load(trackObject.urlTrack);
-
-    wavesurfer.on("ready", (e) => {
-      let finalsecond = Math.floor(wavesurfer.getDuration() % 60);
-      let finalminute = Math.floor((wavesurfer.getDuration() / 60) % 60);
-      if (finalsecond < 10) {
-        finalsecond = "0" + finalminute;
-      }
-
-      setTrackDurationTime(finalminute + ":" + finalsecond);
-    });
-    //set track progress time
-    wavesurfer.on("audioprocess", function (e) {
-      let second = Math.floor(wavesurfer.getCurrentTime() % 60);
-      let minute = Math.floor((wavesurfer.getCurrentTime() / 60) % 60);
-
-      if (second < 10) {
-        second = "0" + second;
-      }
-
-      setTrackProgressTime(minute + ":" + second);
-    });
-    //reset play button
-    wavesurfer.on("finish", function (e) {
-      setPlayPause(true);
-    });
-  }, [trackObject]);
   return (
     <>
       <Row>
@@ -173,8 +159,12 @@ function PlayBar() {
                   </div>
                 </Col>
                 <Col lg={9} md={9} xs={6}>
-                  <Row className="playbar-title">{trackObject.title}</Row>
-                  <Row className="playbar-author">{trackObject.author}</Row>
+                  <Row className="playbar-title">
+                    <span>{trackObject.title}</span>
+                  </Row>
+                  <Row className="playbar-author">
+                    <span>{trackObject.author}</span>
+                  </Row>
                 </Col>
               </Row>
             </Col>
@@ -185,27 +175,42 @@ function PlayBar() {
                     <SkipPreviousOutlined fontSize="large" />
                   </div>
                 </Col>
-                <Col lg={1} className="d-none d-lg-block">
-                  <div onClick={skipBackward}>
-                    <FastRewindOutlined fontSize="large" />
-                  </div>
-                </Col>
-                <Col lg={1} md={4} xs={4}>
-                  {isPlayPause ? (
-                    <div onClick={playPause}>
-                      <PlayArrowOutlined fontSize="large" />
+                {isTrackLoaded && (
+                  <>
+                    <Col lg={1} className="d-none d-lg-block">
+                      <div onClick={WSRewindBackward}>
+                        <FastRewindOutlined fontSize="large" />
+                      </div>
+                    </Col>
+                    <Col lg={1} md={4} xs={4}>
+                      {isTrackLoaded && isPlayPause && (
+                        <div onClick={handlerPlayPause}>
+                          <PauseOutlined fontSize="large" />
+                        </div>
+                      )}
+                      {isTrackLoaded && !isPlayPause && (
+                        <div onClick={handlerPlayPause}>
+                          <PlayArrowOutlined fontSize="large" />
+                        </div>
+                      )}
+                    </Col>
+                    <Col lg={1} md={4} xs={4}>
+                      {isTrackLoaded && (
+                        <div onClick={WSFastForward}>
+                          <FastForwardOutlined fontSize="large" />
+                        </div>
+                      )}
+                    </Col>
+                  </>
+                )}
+                {!isTrackLoaded && (
+                  <Col lg={2} className="d-none d-lg-block playbar-isloading">
+                    <div className="lds-ripple">
+                      <div></div>
+                      <div></div>
                     </div>
-                  ) : (
-                    <div onClick={playPause}>
-                      <PauseOutlined fontSize="large" />
-                    </div>
-                  )}
-                </Col>
-                <Col lg={1} className="d-none d-lg-block">
-                  <div onClick={skipForward}>
-                    <FastForwardOutlined fontSize="large" />
-                  </div>
-                </Col>
+                  </Col>
+                )}
                 <Col lg={1} md={4} xs={4}>
                   <div onClick={skipForward}>
                     <SkipNextOutlined fontSize="large" />
@@ -219,45 +224,70 @@ function PlayBar() {
               </Row>
             </Col>
             <Col lg={1} className="d-none d-lg-block">
-              <Row className="playbar-timer">
-                {trackProgressTime} / {trackDurationTime}
-              </Row>
+              {isTrackLoaded && (
+                <Row className="playbar-timer">
+                  {trackProgressTime} / {trackDurationTime}
+                </Row>
+              )}
             </Col>
             <Col lg={2} className="d-none d-lg-block">
-              <Row className="playbar-volume-container">
-                <Col lg={2}>
-                  {!ixsute ? (
-                    <div onClick={isItMute}>
-                      <VolumeUpOutlined fontSize="medium" />
-                    </div>
-                  ) : (
-                    <div onClick={isItMute}>
-                      <VolumeOffOutlined fontSize="medium" />
-                    </div>
-                  )}
+              {isTrackLoaded && (
+                <Row className="playbar-volume-container">
+                  <Col lg={2}>
+                    {!isMute ? (
+                      <div onClick={handlerMute}>
+                        <VolumeUpOutlined fontSize="medium" />
+                      </div>
+                    ) : (
+                      <div onClick={handlerMute}>
+                        <VolumeOffOutlined fontSize="medium" />
+                      </div>
+                    )}
+                  </Col>
+                  <Col lg={6}>
+                    <input
+                      type="range"
+                      value={volume}
+                      onChange={(e) => {
+                        setVolume(e.target.value);
+                      }}
+                    />
+                  </Col>
+                </Row>
+              )}
+            </Col>
+            <Col lg={2} md={2} xs={2}>
+              <Row>
+                <Col md={2} className="d-none d-md-block playbar-fav-button">
+                  <Favorite className="like-disabled" />
                 </Col>
-                <Col lg={6}>
-                  <input type="range" onChange={handleVolume} />
+                <Col md={2} className="d-none d-md-block playbar-fav-button">
+                  {/* TEMPORAL BUTTONS */}
+                  <Link to="/queue-tracks">
+                    <div>show queue</div>
+                  </Link>
+                </Col>
+                <Col lg={2} md={2} xs={2}>
+                  <button
+                    onClick={() => {
+                      dispatch(isPlayBarDisplayedAction(false));
+                    }}
+                  >
+                    <Cancel />
+                  </button>
                 </Col>
               </Row>
-            </Col>
-            <Col
-              md={2}
-              xs={2}
-              className="d-none d-md-block d-xs-block playbar-fav-button"
-            >
-              <FavButton />
             </Col>
           </Row>
         </Col>
         <Col>
           <Row className="playbar-cast-container d-none d-lg-block d-md-block">
             {!isChromeCast ? (
-              <div onClick={isChromeCastOn} className="cast-block">
+              <div onClick={handlerChromeCast} className="cast-block">
                 <CastOutlined fontSize="medium" />
               </div>
             ) : (
-              <div onClick={isChromeCastOn} className="cast-block">
+              <div onClick={handlerChromeCast} className="cast-block">
                 <CastConnected fontSize="medium" />
               </div>
             )}

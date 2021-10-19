@@ -50,7 +50,7 @@ function Register() {
   }
 
   return (
-    <main className="gradient-background">
+    <main className="login-main gradient-background">
       <Row>
         <Col xs={12} md={6} className="login-register">
           <SignNav />

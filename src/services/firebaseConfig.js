@@ -1,8 +1,8 @@
 export const firebaseConfig = {
-  apiKey: "AIzaSyBbSVuQcFkrP7hr3ltlFIIYFvZHo_TxcSs",
-  authDomain: "apollofy-music-project.firebaseapp.com",
-  projectId: "apollofy-music-project",
-  storageBucket: "apollofy-music-project.appspot.com",
-  messagingSenderId: "798337306022",
-  appId: "1:798337306022:web:80b15d226e4967afb59367",
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_AUTH_DOMAIN,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKED,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID,
 };
