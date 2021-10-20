@@ -166,7 +166,7 @@ function Profile() {
 
   async function lastSevenHoursPlays() {
     await lastSevenHoursPlaysByUser().then((response) => {
-      let rawList = response.data.data;
+      let rawList = response;
       let currentTime = new Date().getTime();
       let oneHourFromNow = 3600000;
       let now = currentTime - oneHourFromNow * 2;

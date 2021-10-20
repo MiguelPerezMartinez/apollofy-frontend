@@ -69,5 +69,10 @@ export async function lastSevenHoursPlaysByUser(userId) {
   return axios({
     method: "GET",
     url: `https://ancient-atoll-88751.herokuapp.com/api/global-plays`,
+  }).then((response) => {
+    const filtered = response.data.data.filter(
+      (element) => element.track_owner_id == trackPlayerId,
+    );
+    return filtered;
   });
 }
