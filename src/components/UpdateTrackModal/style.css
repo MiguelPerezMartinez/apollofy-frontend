@@ -9,11 +9,7 @@
   max-width: 200px;
 }
 .track-update {
-  background: linear-gradient(
-    -30deg,
-    var(--blue) 2%,
-    var(--main-container-color)
-  );
+  background-color: var(--main-modal-background);
   padding: 2% 5% 2%;
   position: absolute;
   z-index: 10;

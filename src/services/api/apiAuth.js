@@ -30,6 +30,12 @@ export async function getById(uid, userToken) {
     },
   });
 }
+export async function getByEmail(email) {
+  return axios({
+    method: "GET",
+    url: `${process.env.REACT_APP_URL}users/get-email/${email}`,
+  });
+}
 
 export async function getCurrentUser() {
   const userToken = await getCurrentUserToken();

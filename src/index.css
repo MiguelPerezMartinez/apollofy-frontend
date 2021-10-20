@@ -134,3 +134,20 @@ a {
 .is-loading-component {
   background-color: var(--main-container-color-hover) !important;
 }
+
+.error {
+  min-width: 100px;
+  border-top: 1px solid red;
+  border-radius: 5px;
+  color: var(--yellow);
+}
+
+.errorModalREACT {
+  position: fixed;
+  width: 50%;
+  border: 3px solid var(--yellow);
+  border-radius: 5px;
+  color: red;
+  left: 25%;
+  padding: 3%;
+}

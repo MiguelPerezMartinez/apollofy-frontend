@@ -19,12 +19,55 @@ export async function likeHandleRequest(userId, trackId) {
 }
 
 //GET
-export async function getTrackByName(query) {
+export async function getTrackById(id) {
   const userToken = await getCurrentUserToken();
   return axios({
     method: "GET",
-    url: `${process.env.REACT_APP_URL}tracks/get-track-by-title`,
-    params: { title: query },
+    url: `${process.env.REACT_APP_URL}tracks/get-track/${id}`,
+    headers: {
+      Authorization: `Bearer ${userToken}`,
+    },
+  });
+}
+
+export async function getTracksByTitle(query) {
+  const userToken = await getCurrentUserToken();
+  return axios({
+    method: "GET",
+    url: `${process.env.REACT_APP_URL}tracks/get-track-by-title/${query}`,
+    headers: {
+      Authorization: `Bearer ${userToken}`,
+    },
+  });
+}
+
+export async function getTracksByAuthor(query) {
+  const userToken = await getCurrentUserToken();
+  return axios({
+    method: "GET",
+    url: `${process.env.REACT_APP_URL}tracks/get-track-by-author/${query}`,
+    headers: {
+      Authorization: `Bearer ${userToken}`,
+    },
+  });
+}
+
+export async function getTracksByAlbum(query) {
+  const userToken = await getCurrentUserToken();
+  return axios({
+    method: "GET",
+    url: `${process.env.REACT_APP_URL}tracks/get-track-by-album/${query}`,
+    headers: {
+      Authorization: `Bearer ${userToken}`,
+    },
+  });
+}
+
+export async function getTracksByGenre(query) {
+  const userToken = await getCurrentUserToken();
+  return axios({
+    method: "GET",
+    url: `${process.env.REACT_APP_URL}tracks/get-track-by-genre/${query}`,
     headers: {
       Authorization: `Bearer ${userToken}`,
     },

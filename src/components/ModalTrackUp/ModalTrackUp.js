@@ -206,6 +206,7 @@ function ModalTrackUp() {
       },
     });
   }
+
   const customStyles = {
     option: (provided) => ({
       ...provided,
@@ -214,6 +215,7 @@ function ModalTrackUp() {
       padding: 20,
     }),
   };
+
   const options = [
     { value: "Pop", label: "Pop" },
     { value: "Rock", label: "Rock" },
@@ -228,7 +230,7 @@ function ModalTrackUp() {
       <div className="modal-background" onClick={handleBlur}>
         <form ref={form} onSubmit={onSubmit}>
           <Row>
-            <Col xs={12} md={6} className="track-upload">
+            <Col xs={12} md={6} lg={6} className="track-upload">
               <h1 className="h3 mb-3 fw-normal">Upload track</h1>
               <Input
                 type="text"

@@ -20,6 +20,18 @@ export async function createNewPlaylistApi(playListData) {
 }
 
 //PATCH
+export async function updatePlaylistById(playlistId, playlistData) {
+  const userToken = await getCurrentUserToken();
+  return axios({
+    method: "PATCH",
+    url: `${process.env.REACT_APP_URL}playlists/update-playlist/${playlistId}`,
+    data: playlistData,
+    headers: {
+      Authorization: `Bearer ${userToken}`,
+    },
+  });
+}
+
 export async function addTrackToPlaylist(playlisTitle, trackId) {
   const userToken = await getCurrentUserToken();
   return axios({
@@ -59,6 +71,19 @@ export async function likeHandleRequest(userId, playlistId) {
   });
 }
 
+//DELETE
+export async function deletePlaylistById(playlistId) {
+  const userToken = await getCurrentUserToken();
+  return axios({
+    method: "DELETE",
+    url: `${process.env.REACT_APP_URL}playlists/delete-playlist/${playlistId}`,
+    headers: {
+      Authorization: `Bearer ${userToken}`,
+    },
+  });
+}
+
+//GET
 export async function getMostLikedPlaylists() {
   const userToken = await getCurrentUserToken();
   return axios({
@@ -106,25 +131,49 @@ export async function getIsPlaylistLiked(playlistId, userId) {
   });
 }
 
-export async function updatePlaylistById(playlistId, playlistData) {
+export async function getPlaylistByTitle(title){
   const userToken = await getCurrentUserToken();
   return axios({
-    method: "PATCH",
-    url: `${process.env.REACT_APP_URL}playlists/update-playlist/${playlistId}`,
-    data: playlistData,
+    method: "GET",
+    url: `${process.env.REACT_APP_URL}playlists/get-playlist-by-title/${title}`,
     headers: {
       Authorization: `Bearer ${userToken}`,
     },
   });
 }
 
-export async function deletePlaylistById(playlistId) {
+export async function getPlaylistsByUsername(username){
   const userToken = await getCurrentUserToken();
   return axios({
-    method: "DELETE",
-    url: `${process.env.REACT_APP_URL}playlists/delete-playlist/${playlistId}`,
+    method: "GET",
+    url: `${process.env.REACT_APP_URL}playlists/get-playlist-by-owner/${username}`,
     headers: {
       Authorization: `Bearer ${userToken}`,
     },
   });
 }
+
+export async function getPlaylistByTrackTitle(title){
+  const userToken = await getCurrentUserToken();
+  return axios({
+    method: "GET",
+    url: `${process.env.REACT_APP_URL}playlists/get-playlist-by-track/${title}`,
+    headers: {
+      Authorization: `Bearer ${userToken}`,
+    },
+  });
+}
+
+export async function getPlayListsByGenre(genre){
+  const userToken = await getCurrentUserToken();
+  return axios({
+    method: "GET",
+    url: `${process.env.REACT_APP_URL}playlists/get-playlist-by-genre/${genre}`,
+    headers: {
+      Authorization: `Bearer ${userToken}`,
+    },
+  });
+}
+
+
+

@@ -78,7 +78,6 @@ function ElementsList() {
 
   //Render function
   function renderData() {
-    // console.log("dataToRender => ", dataToRender);
     if (dataToRender.length > 0) {
       if (dataToRender[0]["tracks"] !== undefined) {
         return dataToRender.map((playlist, index) => (

@@ -1,18 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
-
-const data = {
-  labels: ["1", "2", "3", "4", "5", "6"],
-  datasets: [
-    {
-      label: "n plays",
-      data: [500000, 502000, 505000, 526000, 535000, 545000, 559000],
-      fill: false,
-      backgroundColor: "#ffc107",
-      borderColor: "#ffc107",
-    },
-  ],
-};
 
 const options = {
   scales: {
@@ -26,6 +13,50 @@ const options = {
   },
 };
 
-export default function TotalLastSevenDays() {
-  return <Line data={data} options={options} />;
+export default function TotalLastSevenDays({ data }) {
+  const [dataToShow, setDataToShow] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "n plays",
+        data: [],
+        fill: false,
+        backgroundColor: "#ffc107",
+        borderColor: "#ffc107",
+      },
+    ],
+  });
+  const [updating, setUpdating] = useState(true);
+  const currentTime = new Date().getHours();
+
+  useEffect(() => {
+    if (data) {
+      let labels = [];
+      let totalPlays = [];
+      data.forEach((element, i) => {
+        labels.push(currentTime - i + ":00");
+        totalPlays.push(element.length);
+      });
+      setData(labels, totalPlays);
+      setUpdating(false);
+    }
+  }, [data]);
+
+  function setData(labels, totalPlays) {
+    setDataToShow({
+      ...dataToShow,
+      labels: labels.reverse(),
+      datasets: [
+        {
+          label: "n plays",
+          data: totalPlays.reverse(),
+          fill: false,
+          backgroundColor: "#ffc107",
+          borderColor: "#ffc107",
+        },
+      ],
+    });
+  }
+
+  return <Line data={dataToShow} options={options} />;
 }

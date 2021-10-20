@@ -1,8 +1,9 @@
 //Imports
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { logIn } from "../../services/firebase";
-
+import * as $ from "jquery";
+import { setIsActive } from "../../services/api";
 import "./login.css";
 
 //Import components
@@ -10,11 +11,13 @@ import Input from "../../components/Input";
 import SignNav from "../../components/SignNav";
 import Button from "../../components/Button";
 import { Row, Col } from "react-bootstrap";
-
+import validate from "jquery-validation";
 //Hoc No Authorization
 import withoutAuth from "../../hoc/withoutAuth.js";
 
 function Login() {
+  const [passAndEmailNotMatch, setPassAndEmailNotMatch] = useState();
+  const formLogin = useRef();
   const [state, setState] = useState({
     email: "",
     password: "",
@@ -31,16 +34,45 @@ function Login() {
   //Sign in with user email and password
   const handleSubmit = (e) => {
     e.preventDefault();
-    logIn(state.email, state.password);
+    $(formLogin.current).validate({
+      rules: {
+        email: { required: true },
+        password: { required: true },
+      },
+      messages: {
+        email: {
+          required: "<div className='errorModal'>Email is required</div>",
+        },
+        password: {
+          required: "<div className='errorModal'>Password is required </div>",
+        },
+      },
+      submitHandler: async () => {
+        logIn(state.email, state.password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            setIsActive(true);
+            console.log(user);
+          })
+          .catch((error) => {
+            setPassAndEmailNotMatch("Password and email doesn't match");
+          });
+      },
+    });
   };
 
   return (
     <main className="login-main gradient-background">
+      {passAndEmailNotMatch ? (
+        <div className="errorModalREACT">{passAndEmailNotMatch}</div>
+      ) : (
+        <div></div>
+      )}
       <Row>
         <Col xs={12} md={6} className="login-register">
           <SignNav />
           <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
-          <form onSubmit={handleSubmit}>
+          <form ref={formLogin} onSubmit={handleSubmit}>
             <Input
               type="email"
               name="email"

@@ -13,6 +13,7 @@ import {
   changeMyProfilePicture,
   getTotalPlays,
   getTotalTracks,
+  lastSevenHoursPlaysByUser,
 } from "../../services/api/index";
 import { updateUserPass } from "../../services/firebase";
 import { logOut } from "../../services/firebase";
@@ -22,12 +23,6 @@ import BarsAndModal from "../../hoc/BarsAndModal";
 import ProfileCircleIcon from "../../components/ProfileCircleIcon";
 import Input from "../../components/Input";
 import { Container, Row, Col } from "react-bootstrap";
-import LinkCards from "../../components/LinkCards";
-import {
-  faPlayCircle,
-  faHeart,
-  faBroadcastTower,
-} from "@fortawesome/free-solid-svg-icons";
 
 //Charts
 import {
@@ -54,6 +49,7 @@ function Profile() {
   const [showChart, setShowChart] = useState("total-last-7-days");
   const [myTotalPlays, setMyTotalPlays] = useState("");
   const [myTotalTracks, setMyTotalTracks] = useState("");
+  const [myLastSevenPlays, setMyLastSevenPlays] = useState([]);
 
   const [profilePicture, setProfilePicture] = useState({
     file: "",
@@ -65,6 +61,7 @@ function Profile() {
   useEffect(() => {
     totalPlaysData();
     totalTracksData();
+    lastSevenHoursPlays();
     // eslint-disable-next-line
   }, []);
 
@@ -164,6 +161,35 @@ function Profile() {
     await getTotalTracks(state.userId).then((response) => {
       let total = response.data.message;
       setMyTotalTracks(total);
+    });
+  }
+
+  async function lastSevenHoursPlays() {
+    await lastSevenHoursPlaysByUser().then((response) => {
+      let rawList = response.data.data;
+      let currentTime = new Date().getTime();
+      let oneHourFromNow = 3600000;
+      let now = currentTime - oneHourFromNow * 2;
+      const resultData = [];
+      const ownerTracks = rawList.filter(
+        (element) => (element.track_owner_id = state.userId),
+      );
+
+      function filterByHour(element) {
+        let elementTime = new Date(element.updated_at).getTime();
+        if (elementTime < now && elementTime >= now - oneHourFromNow) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+      for (let i = 0; i <= 6; i++) {
+        let lastHourTracks = ownerTracks.filter(filterByHour);
+        resultData.push(lastHourTracks);
+        now -= oneHourFromNow;
+      }
+      setMyLastSevenPlays(resultData);
     });
   }
 
@@ -517,13 +543,15 @@ function Profile() {
           >
             MY STATS
           </h1>
-          <Row>
+          <Row className="d-flex justify-content-center">
             <Col xl={7}>
+              {showChart === "total-last-7-days" && (
+                <TotalLastSevenDays data={myLastSevenPlays} />
+              )}
               {showChart === "top-10-tracks" && <MyTopTen />}
-              {showChart === "total-last-7-days" && <TotalLastSevenDays />}
               {showChart === "total-9-tracks" && <MyTopNine />}
             </Col>
-            <Col xl={5} className="justify-content-center">
+            {/* <Col xl={5} className="justify-content-center">
               <ul>
                 <li
                   onClick={() => {
@@ -550,7 +578,7 @@ function Profile() {
                   MY TOP 9 TRACKS
                 </li>
               </ul>
-            </Col>
+            </Col> */}
           </Row>
         </Container>
 

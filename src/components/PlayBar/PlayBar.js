@@ -6,6 +6,8 @@ import {
   addTotalPlay,
   postGlobalPlay,
   postRelatedPlay,
+  playNextRandomRelated,
+  getTrackById,
 } from "../../services/api";
 import {
   trackObjectAction,
@@ -83,13 +85,13 @@ function PlayBar() {
         setTrackHistoryInLocalStorage(trackObject);
         addTotalPlay(trackObject._id);
         postGlobalPlay(trackObject);
-        postRelatedPlay(trackObject._id);
+        postRelatedPlay(trackObject._id); 
       },
       (currentTime) => {
         setTrackProgressTime(currentTime);
       },
       () => {
-        skipForward();
+        skipForward(trackObject);
       },
     );
     // eslint-disable-next-line
@@ -127,11 +129,28 @@ function PlayBar() {
     dispatch(trackObjectAction(prevSong));
   }
 
-  function skipForward() {
+  function skipForward(trackObject) {
     const trackQueue = JSON.parse(localStorage.getItem("trackQueue"));
 
     if (trackQueue === null || trackQueue.length < 1) {
-      console.log("Play recomended ", trackQueue);
+      playNextRandomRelated(trackObject._id).then((response) => {
+        if (response.data.data) {
+          const relatedTracks = response.data.data;
+          const unixTime = Date.now();
+          const index = unixTime % relatedTracks.length;
+          const nextTrackId = relatedTracks[index]?.next_track_id;
+          // console.log("playbar next random", nextTrackId);
+          if (nextTrackId) {
+            getTrackById(nextTrackId).then((response) => {
+              if (response) {
+                const nextTrack = response.data.currentTrack;
+                console.log(response.data.currentTrack);
+                dispatch(trackObjectAction(nextTrack));
+              }
+            });
+          }
+        }
+      });
     } else {
       const nextSong = trackQueue.shift();
       localStorage.setItem("trackQueue", JSON.stringify(trackQueue));

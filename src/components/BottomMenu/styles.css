@@ -7,7 +7,7 @@
     position: fixed !important;
     top: 90vh;
     width: 100vw;
-    background-color: var(--main-container-color);
+    background-color: var(--main-modal-background);
     display: flex;
     z-index: 20;
   }

@@ -1,20 +1,23 @@
 .modal-background {
-  position: absolute;
+  position: fixed;
   z-index: 10;
   right: 0px;
   top: 0px;
   width: 100vw;
   height: 100vh;
+  /* padding-left: 15%;
+  padding-right: 15%; */
   background-color: var(--less-blue);
 }
 
 .track-upload {
-  background-color: var(--main-container-color);
+  background-color: var(--main-modal-background);
   padding: 2% 5% 2%;
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 100vw;
+  width: 50vw;
+  min-width: 300px;
   transform: translate(-50%, -50%);
   border-radius: 1rem;
 }

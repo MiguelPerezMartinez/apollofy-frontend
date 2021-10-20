@@ -69,7 +69,7 @@ function DialoguePlaylist() {
   function handlerSharePlaylist() {
     dispatch(
       setShareModal(true, {
-        url: `http://localhost:3000/playlist/${trackDataDialogPlaylist._id}`,
+        url: `playlist/${trackDataDialogPlaylist._id}`,
       }),
     );
     closeDialoguePlaylist();

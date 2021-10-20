@@ -10,7 +10,7 @@
     min-height: 90vh;
     max-height: 90vh;
     padding: 1rem 0.2rem;
-    background-color: var(--main-container-color);
+    background-color: var(--main-modal-background);
     transition: all 0.3s ease-in-out;
     display: flex;
     flex-direction: column;

@@ -7,6 +7,8 @@ import {
   sendPasswordResetEmail,
   updateEmail,
   updatePassword,
+  confirmPasswordReset,
+  verifyPasswordResetCode,
 } from "firebase/auth";
 
 import { setIsActive } from "./api";
@@ -23,15 +25,15 @@ export function authenticationObserver(callback) {
 
 export function logIn(email, password) {
   const auth = getAuth();
-  signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      setIsActive(true);
-      console.log(user);
-    })
-    .catch((error) => {
-      console.error("Log in failed: ", error.message);
-    });
+  return signInWithEmailAndPassword(auth, email, password);
+  // .then((userCredential) => {
+  //   const user = userCredential.user;
+  //   setIsActive(true);
+  //   console.log(user);
+  // })
+  // .catch((error) => {
+  //   alert("data not match");
+  // });
 }
 
 export function logOut() {
@@ -67,6 +69,7 @@ export async function getCurrentUserToken() {
 
 export async function getCurrentUserId() {
   const auth = getAuth();
+  console.log(auth);
   return auth.currentUser.uid;
 }
 
@@ -91,4 +94,14 @@ export async function updateUserPass(newPassword) {
     .catch((error) => {
       console.log(error);
     });
+}
+
+export function verifyCode(actionCode) {
+  const auth = getAuth();
+  return verifyPasswordResetCode(auth, actionCode);
+}
+
+export function sendNewPass(actionCode, confirmPassword) {
+  const auth = getAuth();
+  return confirmPasswordReset(auth, actionCode, confirmPassword);
 }

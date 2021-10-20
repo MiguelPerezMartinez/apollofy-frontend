@@ -1,6 +1,6 @@
 .deleteModal {
   position: fixed;
-  background: linear-gradient(-30deg, var(--blue) 2%, rgb(243, 22, 22));
+  background-color: var(--main-modal-background);
   max-width: 50%;
   left: 25%;
   top: 30%;
@@ -10,6 +10,7 @@
   align-items: center;
   padding: 5%;
 }
+
 .delteTitle {
   color: tomato;
   margin-right: 50px;

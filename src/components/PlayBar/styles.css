@@ -4,7 +4,7 @@
   height: 10vh;
   max-height: 10vh;
   width: 98vw;
-  background-color: var(--main-container-color);
+  background-color: var(--main-modal-background-transparent);
   justify-content: center;
   padding-top: 1vh;
 }

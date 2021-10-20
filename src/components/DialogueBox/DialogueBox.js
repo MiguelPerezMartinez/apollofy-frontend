@@ -105,7 +105,7 @@ function DialogueBox() {
     //Code to share the track
     dispatch(
       setShareModal(true, {
-        url: `http://localhost:3000/track-view/${trackDataDialog._id}`,
+        url: `track-view/${trackDataDialog._id}`,
       }),
     );
     closeDialogue();

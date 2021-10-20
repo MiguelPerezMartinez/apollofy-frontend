@@ -6,8 +6,7 @@ export async function postGlobalPlay(trackData) {
   const trackPlayerId = await getCurrentUserId();
   return axios({
     method: "POST",
-    url: `https://ancient-atoll-88751.herokuapp.com/api/global-plays`,
-    // url: `${process.env.LARAVEL_API_URL}global-plays`,
+    url: `${process.env.REACT_APP_LARAVEL_API_URL}global-plays`,
     data: {
       trackId: trackData._id,
       trackOwnerId: trackData.owner,
@@ -27,11 +26,10 @@ export async function postRelatedPlay(currentTrackId) {
     const prevTrackId = historyTracks[historyTracks.length - 2]._id;
     if (currentTrackId != prevTrackId) {
       //   console.log("current ", currentTrackId);
-      //   console.log("prev ", prevTrackId);
+      console.log("proces env ", process.env);
       return axios({
         method: "POST",
-        url: `https://ancient-atoll-88751.herokuapp.com/api/related-plays`,
-        // url: `${process.env.LARAVEL_API_URL}related-plays`,
+        url: `${process.env.REACT_APP_LARAVEL_API_URL}related-plays`,
         data: {
           prevTrackId: prevTrackId,
           nextTrackId: currentTrackId,
@@ -43,4 +41,33 @@ export async function postRelatedPlay(currentTrackId) {
       });
     }
   }
+}
+
+export async function playNextRandomRelated(currentTrackId) {
+  // console.log("proces env ", process.env);
+
+  const response = await axios({
+    method: "GET",
+    url: `${process.env.REACT_APP_LARAVEL_API_URL}most-related-tracks/${currentTrackId}`,
+    // data: {
+    //   prevTrackId: prevTrackId,
+    //   nextTrackId: currentTrackId,
+    //   userPlayerId: trackPlayerId,
+    // },
+    // headers: {
+    //   Authorization: `Bearer ${userToken}`,
+    // },
+  });
+
+  //console.log("next random: ", response);
+
+  return response;
+}
+
+export async function lastSevenHoursPlaysByUser(userId) {
+  const trackPlayerId = await getCurrentUserId();
+  return axios({
+    method: "GET",
+    url: `https://ancient-atoll-88751.herokuapp.com/api/global-plays`,
+  });
 }

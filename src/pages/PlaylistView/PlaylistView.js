@@ -121,7 +121,7 @@ function PlaylistView() {
 
   function sharePlaylistHandler() {
     dispatch(
-      setShareModal(true, { url: `http://localhost:3000/playlist/${id}` }),
+      setShareModal(true, { url: `playlist/${id}` }),
     );
   }
 
