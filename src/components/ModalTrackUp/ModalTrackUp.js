@@ -201,8 +201,19 @@ function ModalTrackUp() {
         track: { required: "Track file is required" },
       },
       submitHandler: () => {
-        console.log(trackData);
-        apiTrackUpload(trackData).then(dispatch(setUploadTrackModal(false)));
+        let trackDataParsed = trackData;
+        if (trackDataParsed.urlCover[4] !== "s") {
+          trackDataParsed.urlCover =
+            "https" + trackDataParsed.urlCover.slice(4);
+        }
+        if (trackDataParsed.urlTrack[4] !== "s") {
+          trackDataParsed.urlTrack =
+            "https" + trackDataParsed.urlTrack.slice(4);
+        }
+        
+        apiTrackUpload(trackDataParsed).then(
+          dispatch(setUploadTrackModal(false)),
+        );
       },
     });
   }

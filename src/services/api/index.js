@@ -38,6 +38,7 @@ import {
   postRelatedPlay,
   playNextRandomRelated,
   lastSevenHoursPlaysByUser,
+  todaysPlays,
 } from "./laravelApi";
 
 import {
@@ -94,4 +95,5 @@ export {
   playNextRandomRelated,
   getByEmail,
   lastSevenHoursPlaysByUser,
+  todaysPlays,
 };

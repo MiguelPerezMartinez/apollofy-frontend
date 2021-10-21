@@ -1,5 +1,5 @@
 //Imports
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { logIn } from "../../services/firebase";
 import * as $ from "jquery";
@@ -18,6 +18,7 @@ import withoutAuth from "../../hoc/withoutAuth.js";
 function Login() {
   const [passAndEmailNotMatch, setPassAndEmailNotMatch] = useState();
   const formLogin = useRef();
+  const [validedLogin, setValidedLogin] = useState(false);
   const [state, setState] = useState({
     email: "",
     password: "",
@@ -30,10 +31,25 @@ function Login() {
       [e.target.name]: e.target.value,
     });
   };
-
+  useEffect(() => {
+    if (validedLogin) {
+      console.log(state);
+      logIn(state.email, state.password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          setIsActive(true);
+          console.log(user);
+        })
+        .catch((error) => {
+          setPassAndEmailNotMatch("Password and email doesn't match");
+        });
+    }
+    setValidedLogin(false);
+  }, [validedLogin]);
   //Sign in with user email and password
   const handleSubmit = (e) => {
     e.preventDefault();
+
     $(formLogin.current).validate({
       rules: {
         email: { required: true },
@@ -47,16 +63,9 @@ function Login() {
           required: "<div className='errorModal'>Password is required </div>",
         },
       },
-      submitHandler: async () => {
-        logIn(state.email, state.password)
-          .then((userCredential) => {
-            const user = userCredential.user;
-            setIsActive(true);
-            console.log(user);
-          })
-          .catch((error) => {
-            setPassAndEmailNotMatch("Password and email doesn't match");
-          });
+
+      submitHandler: () => {
+        setValidedLogin(true);
       },
     });
   };
@@ -72,6 +81,7 @@ function Login() {
         <Col xs={12} md={6} className="login-register">
           <SignNav />
           <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
+
           <form ref={formLogin} onSubmit={handleSubmit}>
             <Input
               type="email"

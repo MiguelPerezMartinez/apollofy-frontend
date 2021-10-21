@@ -1,5 +1,5 @@
 //Imports
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 import "./register.css";
 import * as $ from "jquery";
@@ -18,6 +18,7 @@ import withoutAuth from "../../hoc/withoutAuth.js";
 function Register() {
   const formRegister = useRef();
   const [userExist, setUserExist] = useState();
+  const [validedRegister, setValidedRegister] = useState(false);
   const [registerData, setRegisterData] = useState({
     firstname: "",
     lastname: "",
@@ -26,7 +27,32 @@ function Register() {
     password: "",
     confirmPassword: "",
   });
-
+  useEffect(() => {
+    if (validedRegister) {
+      const { email, password, confirmPassword } = registerData;
+      if (confirmPassword === password) {
+        console.log("submit ", registerData);
+        getByEmail(email).then((res) => {
+          console.log("getByEmail", res);
+          const userExist = res.data.currentUser;
+          if (userExist != null) {
+            setUserExist(
+              "We detected that the user with that email already exist",
+            );
+          } else {
+            registerNewUser(email, password).then((res) => {
+              const userApi = registerInApi(registerData, res.user.uid);
+            });
+            // console.log("the userFirebase: ", user);
+            // console.log("the userApi: ", userApi);
+          }
+        });
+      } else {
+        console.log("los datos no coinciden");
+      }
+    }
+    setValidedRegister(false);
+  }, [validedRegister]);
   //Manage values of state properties
   function handleChange(e) {
     setRegisterData({
@@ -56,24 +82,25 @@ function Register() {
         confirmPassword: { required: "ConfirmPassword is required" },
       },
       submitHandler: async () => {
-        const { email, password, confirmPassword } = registerData;
-        if (confirmPassword === password) {
-          console.log("submit ", registerData);
-          const userEmailExist = await getByEmail(email);
-          const userExist = userEmailExist.data.currentUser;
-          if (userExist != null) {
-            setUserExist(
-              "We detected that the user with that email already exist",
-            );
-          } else {
-            const { user } = await registerNewUser(email, password);
-            console.log("the userFirebase: ", user);
-            const userApi = await registerInApi(registerData, user.uid);
-            console.log("the userApi: ", userApi);
-          }
-        } else {
-          console.log("los datos no coinciden");
-        }
+        setValidedRegister(true);
+        // const { email, password, confirmPassword } = registerData;
+        // if (confirmPassword === password) {
+        //   console.log("submit ", registerData);
+        //   const userEmailExist = await getByEmail(email);
+        //   const userExist = userEmailExist.data.currentUser;
+        //   if (userExist != null) {
+        //     setUserExist(
+        //       "We detected that the user with that email already exist",
+        //     );
+        //   } else {
+        //     const { user } = await registerNewUser(email, password);
+        //     console.log("the userFirebase: ", user);
+        //     const userApi = await registerInApi(registerData, user.uid);
+        //     console.log("the userApi: ", userApi);
+        //   }
+        // } else {
+        //   console.log("los datos no coinciden");
+        // }
       },
     });
   }

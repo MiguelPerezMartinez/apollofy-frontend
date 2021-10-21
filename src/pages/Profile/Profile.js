@@ -14,6 +14,7 @@ import {
   getTotalPlays,
   getTotalTracks,
   lastSevenHoursPlaysByUser,
+  todaysPlays,
 } from "../../services/api/index";
 import { updateUserPass } from "../../services/firebase";
 import { logOut } from "../../services/firebase";
@@ -62,6 +63,7 @@ function Profile() {
     totalPlaysData();
     totalTracksData();
     lastSevenHoursPlays();
+    todayTotalPlays();
     // eslint-disable-next-line
   }, []);
 
@@ -191,6 +193,10 @@ function Profile() {
       }
       setMyLastSevenPlays(resultData);
     });
+  }
+
+  async function todayTotalPlays() {
+    todaysPlays(currentUser.userId);
   }
 
   return (

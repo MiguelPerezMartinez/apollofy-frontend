@@ -79,14 +79,17 @@ function DialogueBox() {
     // alert(`${trackDataDialog.title} added to queue.`);
     closeDialogue();
   }
+
   function handlerAddToMyplaylist() {
     //Code to add the track to queue
     dispatch(setMyPlaylistModal(true, trackDataDialog));
     closeDialogue();
   }
+
   // function handlerMoreInfo() {
   //   alert(`${trackDataDialog._id}`);
   // }
+
   function handlerEdit() {
     //Code to edit the track
     dispatch(setUpdateTrackModal(true, trackDataDialog));
