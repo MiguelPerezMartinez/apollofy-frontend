@@ -85,7 +85,7 @@ function PlayBar() {
         setTrackHistoryInLocalStorage(trackObject);
         addTotalPlay(trackObject._id);
         postGlobalPlay(trackObject);
-        postRelatedPlay(trackObject._id); 
+        postRelatedPlay(trackObject._id);
       },
       (currentTime) => {
         setTrackProgressTime(currentTime);
@@ -283,22 +283,25 @@ function PlayBar() {
             <Col lg={2} md={2} xs={2}>
               <Row>
                 <Col md={2} className="d-none d-md-block playbar-fav-button">
-                  <Favorite className="like-disabled" />
-                </Col>
-                <Col md={2} className="d-none d-md-block playbar-fav-button">
                   {/* TEMPORAL BUTTONS */}
                   <Link to="/queue-tracks">
-                    <div>show queue</div>
+                    <div>Show queue</div>
                   </Link>
                 </Col>
-                <Col lg={2} md={2} xs={2}>
-                  <button
+                <Col
+                  lg={4}
+                  md={4}
+                  xs={4}
+                  className="d-flex align-content-center justify-content-center"
+                  style={{ height: "100%" }}
+                >
+                  <span
                     onClick={() => {
                       dispatch(isPlayBarDisplayedAction(false));
                     }}
                   >
                     <Cancel />
-                  </button>
+                  </span>
                 </Col>
               </Row>
             </Col>

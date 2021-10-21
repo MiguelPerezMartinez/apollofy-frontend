@@ -126,9 +126,9 @@ function Home() {
                   </Col>
                   <Col xs={12} md={12} lg={6}>
                     <LinkCards
-                      name="Your Radio"
+                      name="History"
                       icon={faBroadcastTower}
-                      to=""
+                      to="/history-tracks"
                     />
                   </Col>
                 </Row>

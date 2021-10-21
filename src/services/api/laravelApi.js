@@ -65,21 +65,21 @@ export async function playNextRandomRelated(currentTrackId) {
 }
 
 export async function lastSevenHoursPlaysByUser(userId) {
-  const trackPlayerId = await getCurrentUserId();
   return axios({
     method: "GET",
     url: `https://ancient-atoll-88751.herokuapp.com/api/global-plays`,
   }).then((response) => {
-    console.log(trackPlayerId);
+    console.log(userId);
     console.log(response.data.data);
-    const filtered = response.data.data.filter(esSuficientementeGrande);
-    console.log(filtered);
-    return filtered;
+    // const filtered = response.data.data.filter(esSuficientementeGrande);
+    return response.data.data;
   });
 
-  function esSuficientementeGrande(element) {
-    if (element.track_owner_id === trackPlayerId) {
-      return true;
-    }
-  }
+  // function esSuficientementeGrande(element) {
+  //   console.log(userId);
+  //   console.log(element.track_owner_id);
+  //   if (element.track_owner_id === userId) {
+  //     return true;
+  //   }
+  // }
 }

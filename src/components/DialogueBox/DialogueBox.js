@@ -76,7 +76,7 @@ function DialogueBox() {
   function handlerAddToQueue() {
     //Code to add the track to queue
     setTrackQueueInLocalStorage(trackDataDialog);
-    alert(`${trackDataDialog.title} added to queue.`);
+    // alert(`${trackDataDialog.title} added to queue.`);
     closeDialogue();
   }
   function handlerAddToMyplaylist() {
